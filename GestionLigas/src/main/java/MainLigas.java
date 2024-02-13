@@ -14,20 +14,31 @@ import static controller.DAOLigas.obtenerTodasLasLigas;
 public class MainLigas {
     public static void main(String[] args) {
 
-        Ligas ligaOne = new Ligas("Serie A", "20/08/2024", "10/06/2025");
         DAOLigas daoLigas = new DAOLigas();
-        daoLigas.insertarLiga(ligaOne);
-
+        DAOEquipos daoEquipos = new DAOEquipos();
         DAOPartido daoPartido = new DAOPartido();
 
-        DAOEquipos daoEquipos = new DAOEquipos();
-        //daoEquipos.eliminarEquipos(5,6);
-
-        List<Equipos> equipos = obtenerEquipos();
+        // Verificar si ya existen ligas
         List<Ligas> ligas = obtenerTodasLasLigas();
+        if (ligas.isEmpty()) {
+            // Si no existen, crear y insertar la liga
+            Ligas ligaOne = new Ligas("Serie A", "20/08/2024", "10/06/2025");
+            daoLigas.insertarLiga(ligaOne);
+            ligas.add(ligaOne); // Agregar la liga creada a la lista
+        }
 
-        crearEquipos(ligaOne);
+        // Verificar si ya existen equipos
+        List<Equipos> equipos = obtenerEquipos();
+        if (equipos.isEmpty()) {
+            // Si no existen, crear y insertar los equipos
+            crearEquipos(ligas.get(0)); // Utilizar la primera liga disponible
+            equipos = obtenerEquipos(); // Actualizar la lista de equipos
+        }
+
+        // Crear y insertar partidos
         crearPartidos(equipos, ligas, daoPartido, 6);
+
+        // Mostrar datos de equipos y partidos
         mostrarDatosEquipos();
         mostrarDatosPartidos();
     }
